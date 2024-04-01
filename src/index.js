@@ -16,7 +16,7 @@ async function main(){
           });
         
         // Iniciar el servidor Express
-        const port = 3000;
+        const port = process.env.PORT || 4000;
         app.listen(port, () => {
             console.log(`Servidor escuchando en el puerto ${port}.`);
         });
