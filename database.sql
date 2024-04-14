@@ -96,3 +96,5 @@ CREATE TABLE SeguimientoCliente (
 -- Insertar seguimientos de clientes
 INSERT INTO SeguimientoCliente (descripcion, fecha_inicio, fecha_finalizacion, estado, ID_Cita)
 VALUES ('Descripción del seguimiento', '2024-03-10', '2024-03-15', 'En progreso', 1);
+
+

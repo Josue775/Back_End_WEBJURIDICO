@@ -1,100 +1,59 @@
 import { Cita } from '../models/citas.js'; // Asegúrate de importar correctamente el modelo Cita
-import { Usuario } from '../models/usuario.js'; // Asegúrate de importar correctamente el modelo Usuario
 
 // Obtener todas las citas
-export const getCitas = async (req, res) => {
+
+// Método para agregar una cita
+export const agregarCita = async (req, res) => {
+    const { fecha, hora, estado, id_usuario, id_servicio } = req.body;
+    try {
+        const cita = await Cita.create({ fecha, hora, estado, id_usuario, id_servicio });
+        res.json({ mensaje: 'Cita agregada correctamente', cita });
+    } catch (error) {
+        console.error('Error al agregar cita:', error);
+        res.status(500).json({ mensaje: 'Error al agregar cita', error });
+    }
+};
+
+// Método para obtener todas las citas
+export const obtenerCitas = async (req, res) => {
     try {
         const citas = await Cita.findAll();
         res.json(citas);
     } catch (error) {
-        console.error("Error al obtener las citas:", error);
-        res.status(500).send("Error al obtener las citas");
+        console.error('Error al obtener citas:', error);
+        res.status(500).json({ mensaje: 'Error al obtener citas', error });
     }
 };
 
-// Crear una nueva cita
-export const createCita = async (req, res) => {
-    const { fecha, hora, estado, ID_Cliente, ID_Servicio } = req.body;
+// Método para editar una cita
+export const editarCita = async (req, res) => {
+    const id = req.params.id;
+    const { fecha, hora, estado, id_usuario, id_servicio } = req.body;
     try {
-        // Verificar si el cliente existe antes de crear la cita
-        const cliente = await Usuario.findByPk(ID_Cliente);
-        if (!cliente) {
-            return res.status(404).send('Cliente no encontrado');
+        const cita = await Cita.findByPk(id);
+        if (!cita) {
+            return res.status(404).json({ mensaje: 'Cita no encontrada' });
         }
-
-        const nuevaCita = await Cita.create({
-            fecha,
-            hora,
-            estado,
-            ID_Cliente,
-            ID_Servicio
-        });
-        res.send("Cita creada exitosamente");
+        await cita.update({ fecha, hora, estado, id_usuario, id_servicio });
+        res.json({ mensaje: 'Cita actualizada correctamente' });
     } catch (error) {
-        console.error("Error al crear la cita:", error);
-        res.status(500).send("Error al crear la cita");
+        console.error('Error al editar cita:', error);
+        res.status(500).json({ mensaje: 'Error al editar cita', error });
     }
 };
 
-// Obtener una cita por ID
-export const getCitaById = async (req, res) => {
+// Método para eliminar una cita
+export const eliminarCita = async (req, res) => {
     const id = req.params.id;
     try {
         const cita = await Cita.findByPk(id);
-        if (cita) {
-            res.json(cita);
-        } else {
-            res.status(404).send('Cita no encontrada');
+        if (!cita) {
+            return res.status(404).json({ mensaje: 'Cita no encontrada' });
         }
+        await cita.destroy();
+        res.json({ mensaje: 'Cita eliminada correctamente' });
     } catch (error) {
-        console.error("Error al obtener la cita:", error);
-        res.status(500).send("Error al obtener la cita");
-    }
-};
-
-// Actualizar una cita
-export const updateCita = async (req, res) => {
-    const id = req.params.id;
-    const { fecha, hora, estado, ID_Cliente, ID_Servicio } = req.body;
-    try {
-        const cita = await Cita.findByPk(id);
-        if (cita) {
-            // Verificar si el cliente existe antes de actualizar la cita
-            const cliente = await Usuario.findByPk(ID_Cliente);
-            if (!cliente) {
-                return res.status(404).send('Cliente no encontrado');
-            }
-
-            await cita.update({
-                fecha,
-                hora,
-                estado,
-                ID_Cliente,
-                ID_Servicio
-            });
-            res.send("Cita actualizada exitosamente");
-        } else {
-            res.status(404).send('Cita no encontrada');
-        }
-    } catch (error) {
-        console.error("Error al actualizar la cita:", error);
-        res.status(500).send("Error al actualizar la cita");
-    }
-};
-
-// Eliminar una cita
-export const deleteCita = async (req, res) => {
-    const id = req.params.id;
-    try {
-        const cita = await Cita.findByPk(id);
-        if (cita) {
-            await cita.destroy();
-            res.send("Cita eliminada exitosamente");
-        } else {
-            res.status(404).send('Cita no encontrada');
-        }
-    } catch (error) {
-        console.error("Error al eliminar la cita:", error);
-        res.status(500).send("Error al eliminar la cita");
+        console.error('Error al eliminar cita:', error);
+        res.status(500).json({ mensaje: 'Error al eliminar cita', error });
     }
 };

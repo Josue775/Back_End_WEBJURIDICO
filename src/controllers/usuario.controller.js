@@ -1,6 +1,6 @@
 import {Usuario} from '../models/usuario.js'
 import bcrypt from 'bcrypt';
-
+import { handleUnauthorizedError, generateJWT } from '../utils/index.js';
 export const loginUsuario = async (req, res) => {
     const { correo_electronico, contrasena } = req.body;
     try {
@@ -16,7 +16,8 @@ export const loginUsuario = async (req, res) => {
         const contraseñaValida = await bcrypt.compare(contrasena, usuario.contrasena);
 
         if (contraseñaValida) {
-            res.json({ message: "Inicio de sesión exitoso", id_rol: usuario.id_rol });            
+            const token = generateJWT(usuario.id);
+            res.json({ message: "Inicio de sesión exitoso", usuario, token});            
         } else {
             res.status(401).json({ message: "Correo electrónico o contraseña incorrectos" });
         }
@@ -58,7 +59,7 @@ export const createUsuario = async (req, res) => {
         const hashedPassword = await bcrypt.hash(contrasena, 10);
 
         // Si no existe un usuario con los mismos datos, crea uno nuevo con la contraseña encriptada
-        const newCliente = await Usuario.create({
+        const newUsuario = await Usuario.create({
             nombre,
             apellido,
             correo_electronico,
@@ -66,13 +67,18 @@ export const createUsuario = async (req, res) => {
             telefono,
             id_rol
         });
-        res.send("Cliente creado exitosamente");
+
+        // Generar un token JWT para el nuevo usuario
+        const token = generateJWT(newUsuario.id);
+
+        // Devolver una respuesta con toda la información del nuevo usuario y el token
+        res.json({ message: "Usuario creado exitosamente", usuario: newUsuario, token });
+
     } catch (error) {
-        console.error("Error al crear cliente:", error);
-        res.status(500).send("Error al crear cliente");
+        console.error("Error al crear usuario:", error);
+        res.status(500).send("Error al crear usuario");
     }
 };
-
 // Buscar cliente por ID
 export const getUsuarioById = async (req, res) => {
     const id = req.params.id;
