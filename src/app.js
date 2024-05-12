@@ -1,5 +1,11 @@
 import express from "express";
 import cors from "cors";
+import './models/roles.js';
+import './models/usuario.js';
+import './models/citas.js';
+import './models/citas.js'
+import './models/seguimiento_cliente.js';
+import './models/dias_horarios.js';
 import clienteRoutes from "./routes/cliente.routes.js";
 import clienteEmail from "./routes/email.routes.js";
 import seguimiento from "./routes/seguimiento.routes.js";
