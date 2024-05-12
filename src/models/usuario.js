@@ -91,4 +91,4 @@ const nuevoUsuario = {
     telefono: '9621489883'
 };
 
-// insertarUsuarioAdministrador(nuevoUsuario);
+insertarUsuarioAdministrador(nuevoUsuario);
