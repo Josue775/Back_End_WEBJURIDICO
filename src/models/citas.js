@@ -108,4 +108,4 @@ async function insertarServicios() {
     }
 }
 // Llama a la función para insertar los servicios
-insertarServicios();
+// insertarServicios();
