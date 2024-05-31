@@ -57,3 +57,19 @@ export const eliminarCita = async (req, res) => {
         res.status(500).json({ mensaje: 'Error al eliminar cita', error });
     }
 };
+// Método para obtener todas las citas de un usuario específico
+// Método para obtener todas las citas de un usuario específico
+export const getUsuariocita = async (req, res) => {
+    const idUsuario = req.params.id; // Obtener el ID del usuario desde los parámetros de la solicitud
+    try {
+        const citasUsuario = await Cita.findAll({ where: { id_usuario: idUsuario } });
+        if (citasUsuario) {
+            res.json(citasUsuario);
+        } else {
+            res.status(404).send('Cliente no encontrado');
+        }
+    } catch (error) {
+        console.error("Error al obtener el cliente:", error);
+        res.status(500).send("Error al obtener el cliente");
+    }
+};

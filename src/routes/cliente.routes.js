@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUsuario, createUsuario, getUsuarioById, updateUsuario, deleteUsuario,loginUsuario } from '../controllers/usuario.controller.js';
+import { getUsuario, createUsuario, getUsuarioById, updateUsuario, deleteUsuario,loginUsuario,buscarSeguimientosPorNombre } from '../controllers/usuario.controller.js';
 
 const router = Router();
 
@@ -10,7 +10,6 @@ router.put("/api/cliente/:id", updateUsuario);
 router.delete("/api/cliente/:id", deleteUsuario);
 router.get("/api/cliente/:id", getUsuarioById);
 router.post("/api/login", loginUsuario);
-// Rutas para Citas
-
+router.post("/api/ClienteSeuimiento", buscarSeguimientosPorNombre);
 
 export default router;

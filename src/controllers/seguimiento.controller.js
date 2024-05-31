@@ -71,3 +71,17 @@ export const eliminarSeguimientoTramite = async (req, res) => {
         res.status(400).json({ mensaje: 'Error al eliminar el seguimiento de trámite', error });
     }
 };
+// Método para obtener todos los seguimientos asociados a una cita específica por su ID de cita
+export const obtenerSeguimientosPorIdCita = async (req, res) => {
+    const idCita = req.params.id; // Obtener el ID de la cita desde los parámetros de la solicitud
+    try {
+        // Buscar todos los seguimientos asociados a la cita por su ID de cita
+        const seguimientos = await SeguimientoCliente.findAll({ where: { id_cita: idCita } });
+        
+        // Devolver los seguimientos asociados a la cita
+        res.json(seguimientos);
+    } catch (error) {
+        console.error('Error al obtener los seguimientos de la cita:', error);
+        res.status(500).json({ mensaje: 'Error al obtener los seguimientos de la cita', error });
+    }
+};

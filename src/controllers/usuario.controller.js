@@ -1,6 +1,10 @@
 import {Usuario} from '../models/usuario.js'
 import bcrypt from 'bcrypt';
 import { handleUnauthorizedError, generateJWT } from '../utils/index.js';
+import { Cita } from '../models/citas.js'; // Asegúrate de importar correctamente el modelo Cita
+import { SeguimientoCliente } from '../models/seguimiento_cliente.js';
+
+
 export const loginUsuario = async (req, res) => {
     const { correo_electronico, contrasena } = req.body;
     try {
@@ -17,7 +21,7 @@ export const loginUsuario = async (req, res) => {
 
         if (contraseñaValida) {
             const token = generateJWT(usuario.id);
-            res.json({ message: "Inicio de sesión exitoso", usuario, token});            
+            res.json({ message: "Inicio de sesión exitoso", usuario, token });            
         } else {
             res.status(401).json({ message: "Correo electrónico o contraseña incorrectos" });
         }
@@ -26,6 +30,7 @@ export const loginUsuario = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
 
 export const getUsuario = async (req, res) => {
     try {
@@ -96,17 +101,26 @@ export const getUsuarioById = async (req, res) => {
 };
 
 // Actualizar cliente
+// Actualizar cliente
 export const updateUsuario = async (req, res) => {
     const id = req.params.id;
     const { nombre, apellido, correo_electronico, contrasena, telefono, id_rol } = req.body;
     try {
         const cliente = await Usuario.findByPk(id);
         if (cliente) {
+            // Verificar si se proporcionó una nueva contraseña
+            let hashedPassword = cliente.contrasena; // Mantener la contraseña existente por defecto
+
+            if (contrasena) {
+                // Si se proporcionó una nueva contraseña, encriptarla antes de actualizar
+                hashedPassword = await bcrypt.hash(contrasena, 10);
+            }
+
             await cliente.update({
                 nombre,
                 apellido,
                 correo_electronico,
-                contrasena,
+                contrasena: hashedPassword, // Actualizar la contraseña encriptada
                 telefono,
                 id_rol
             });
@@ -119,6 +133,7 @@ export const updateUsuario = async (req, res) => {
         res.status(500).send("Error al actualizar el cliente");
     }
 };
+
 
 // Eliminar cliente
 export const deleteUsuario = async (req, res) => {
@@ -134,5 +149,36 @@ export const deleteUsuario = async (req, res) => {
     } catch (error) {
         console.error("Error al eliminar el cliente:", error);
         res.status(500).send("Error al eliminar el cliente");
+    }
+};
+
+export const buscarSeguimientosPorNombre = async (req, res) => {
+    const { nombre } = req.query;
+
+    try {
+        // Buscar el usuario por nombre
+        const usuario = await Usuario.findOne({ where: { nombre } });
+
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Buscar todas las citas del usuario
+        const citas = await Cita.findAll({ where: { id_usuario: usuario.id_usuario } });
+
+        if (citas.length === 0) {
+            return res.status(404).json({ message: 'No hay citas para este usuario' });
+        }
+
+        // Obtener los IDs de las citas
+        const citaIds = citas.map(cita => cita.id_cita);
+
+        // Buscar los seguimientos relacionados con las citas
+        const seguimientos = await SeguimientoCliente.findAll({ where: { id_cita: citaIds } });
+
+        res.json(seguimientos);
+    } catch (error) {
+        console.error('Error al buscar seguimientos:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
     }
 };

@@ -1,6 +1,6 @@
 import app from './app.js'
 import { sequelize } from './database/database.js';
-
+import './email/email_send.js'
 // import './models/roles.js'
 // import './models/usurio.js'
 // import './models/citas.js'
