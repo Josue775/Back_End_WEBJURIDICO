@@ -182,3 +182,34 @@ export const buscarSeguimientosPorNombre = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor' });
     }
 };
+
+export const updatePassword = async (req, res) => {
+    const { newPassword, token } = req.body; // Recibe el token del cuerpo de la solicitud
+  
+    if (!newPassword) {
+      return res.status(400).json({ message: "La nueva contraseña es requerida" });
+    }
+  
+    try {
+      // Busca el usuario por el token
+      const usuario = await Usuario.findOne({ where: { token } });
+  
+      if (!usuario) {
+        return res.status(404).json({ message: "Token no válido" });
+      }
+  
+      // Encriptar la nueva contraseña
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+      // Actualizar la contraseña en la base de datos y eliminar el token
+      usuario.contrasena = hashedPassword;
+      usuario.token = null; // Limpia el token después de usarlo
+      await usuario.save();
+  
+      res.json({ message: "Contraseña actualizada exitosamente" });
+    } catch (error) {
+      console.error("Error al actualizar la contraseña:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  };
+  

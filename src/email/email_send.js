@@ -101,7 +101,7 @@ const sendDailyReport = async () => {
 };
 
 // Programar la tarea para que se ejecute todos los días a las 11:50 AM
-cron.schedule('43 11 * * *', () => {
+cron.schedule('06 13 * * *', () => {
   console.log('Ejecutando tarea programada de envío de reporte diario de citas...');
   sendDailyReport();
 });

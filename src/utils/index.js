@@ -89,6 +89,24 @@ const generateJWT = (id) => {
 
   return token;
 };
+const verifyToken = (req, res, next) => {
+  const authorizationHeader = req.headers.authorization;
+  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+    return handleUnauthorizedError('No token provided', res);
+  }
+
+  const token = authorizationHeader.split(" ")[1];
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.id;
+    next();
+  } catch (err) {
+    return handleUnauthorizedError('Failed to authenticate token', res);
+  }
+};
+
+
 
 export {
   handleNotFoundError,
@@ -104,4 +122,5 @@ export {
   handleGatewayTimeoutError,
   UniqueId,
   generateJWT,
+  verifyToken,
 };
