@@ -45,4 +45,4 @@ const insertarRolesIniciales = async () => {
 };
 
 // Llamar a la función para insertar los roles iniciales
-// insertarRolesIniciales();
+insertarRolesIniciales();
