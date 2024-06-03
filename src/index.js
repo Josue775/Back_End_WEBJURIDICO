@@ -7,7 +7,7 @@ import './email/email_send.js'
 async function main(){
     try {
         await sequelize.authenticate()
-        await sequelize.sync({ force: false }).then(() => {
+        await sequelize.sync({ force: true }).then(() => {
             console.log('Conexión a la base de datos establecida y modelos sincronizados');
             // Tu código para iniciar el servidor aquí
           })
