@@ -88,7 +88,7 @@ const sendDailyReport = async () => {
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'jmh.98marroquin@gmail.com', // el correo del administrador
+      to: 'figueroaaroldo42@gmail.com', // el correo del administrador
       subject: 'Reporte Diario de Citas para Mañana',
       html: htmlContent, // usar HTML en lugar de texto plano
     };
@@ -101,7 +101,7 @@ const sendDailyReport = async () => {
 };
 
 // Programar la tarea para que se ejecute todos los días a las 11:50 AM
-cron.schedule('06 13 * * *', () => {
+cron.schedule('00 22 * * *', () => {
   console.log('Ejecutando tarea programada de envío de reporte diario de citas...');
   sendDailyReport();
 });
